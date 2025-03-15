@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        x:Class="client.SettingsWindow"
+        Title="Settings"
+        Width="300"
+        Height="200">
+    
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+        <TextBlock Text="Settings" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+        
+        <StackPanel Orientation="Horizontal" Spacing="5">
+            <TextBlock Text="Dark Mode"/>
+            <ToggleButton Name="DarkModeToggle" IsCheckedChanged="DarkModeToggle_Changed"/>
+        </StackPanel>
+
+        <Button Content="Close" Click="CloseSettings_Click"/>
+    </StackPanel>
+</Window>
