@@ -21,7 +21,7 @@ export default LandingPageLogic
 </div>    
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 transition-colors duration-300">
       <div class="card">
-        <h2 class="text-2xl font-bold text-center text-blue-600 dark:text-blue-400 mb-6">MC Remote Control</h2>
+        <h2 class="minecraft-header text-center mb-6">MC Remote Control</h2>
         <div class="space-y-2 mb-6">
           <div class="flex flex-col sm:flex-row gap-2">
             <input 
@@ -32,8 +32,9 @@ export default LandingPageLogic
             <button 
               @click="connectToServer"
               class="btn"
+              :class="{ 'bg-green-600 hover:bg-green-700': isConnected, 'bg-blue-600 hover:bg-blue-700': !isConnected }"
             >
-              Connect
+              {{ isConnected ? 'Connected' : 'Connect' }}
             </button>
           </div>
         </div>
@@ -44,26 +45,34 @@ export default LandingPageLogic
           {{ statusMessage }}
         </p>
         
+        <div class="server-status" v-if="isConnected">
+          <div class="status-indicator" :class="{ 'status-running': isServerRunning, 'status-stopped': !isServerRunning }">
+            <span v-if="isServerRunning">Server Running</span>
+            <span v-else>Server Stopped</span>
+          </div>
+        </div>
+
         <div class="flex justify-center gap-4 my-6">
           <button 
             @click="startServer"
             class="btn"
+            :disabled="!isConnected || isServerRunning"
+            :class="{ 'opacity-50 cursor-not-allowed': !isConnected || isServerRunning }"
           >
             Start Server
           </button>
           <button 
             @click="stopServer"
             class="btn"
+            :disabled="!isConnected || !isServerRunning"
+            :class="{ 'opacity-50 cursor-not-allowed': !isConnected || !isServerRunning }"
           >
             Stop Server
           </button>
         </div>
         
-        <button 
-          @click="toggleSettings"
-          class="toggle-btn"
-        >
-          ⚙️
+        <button @click="toggleSettings" class="toggle-btn">
+            <i class="fas fa-cog"></i>
         </button>
         
         <div v-if="showSettings" class="settings-popup">

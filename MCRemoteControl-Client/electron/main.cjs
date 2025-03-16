@@ -7,7 +7,7 @@ const isDev = process.env.NODE_ENV === 'development';
 function createWindow() {
   const win = new BrowserWindow({
     width: 600,
-    height: 500,
+    height: 450,
     icon: null,
     resizable: false,
     frame: false,
@@ -38,6 +38,20 @@ function createWindow() {
 const getUserDataPath = () => app.getPath('userData');
 const getConfigPath = () => path.join(getUserDataPath(), '.mcremoteconfig');
 
+function loadConfig() {
+  const configPath = getConfigPath();
+  if (fs.existsSync(configPath)) {
+    try {
+      const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      return configData;
+    } catch (error) {
+      console.error('Error loading config:', error);
+      return {};
+    }
+  }
+  return {};
+}
+
 // IPC Handlers
 ipcMain.handle('generate-keys', async () => {
   try {
@@ -64,7 +78,11 @@ ipcMain.handle('generate-keys', async () => {
     };
 
     fs.writeFileSync(getConfigPath(), JSON.stringify(configData, null, 2));
-    return { success: true, message: 'New key pair generated successfully' };
+    return { 
+      success: true, 
+      message: 'New key pair generated successfully',
+      privateKey: privateKey
+    };
   } catch (error) {
     console.error('Error generating keys:', error);
     return { success: false, message: 'Error generating keys' };
@@ -78,7 +96,6 @@ ipcMain.on('close-window', () => {
 
 ipcMain.handle('OpenFilePath', async () => {
   try {
-    const { shell } = require('electron');
     const configDir = getUserDataPath();
     
     await shell.openPath(configDir);
@@ -150,5 +167,47 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
+  }
+});
+
+ipcMain.handle('create-signature', async (_, privateKey, message) => {
+  try {
+    const sign = crypto.createSign('RSA-SHA256');
+    sign.update(message);
+    sign.end();
+    return sign.sign(privateKey, 'base64');
+  } catch (error) {
+    console.error('Error creating signature:', error);
+    return null;
+  }
+});
+
+ipcMain.handle('loadSavedConfig', async () => {
+  try {
+    const config = loadConfig();
+    return {
+      address: config.serverAddress,
+      privateKey: config.privateKey
+    };
+  } catch (error) {
+    console.error('Error loading saved config:', error);
+    return {};
+  }
+});
+
+ipcMain.handle('saveConfig', async (_, address, privateKey) => {
+  try {
+    const config = loadConfig();
+    const updatedConfig = {
+      ...config,
+      serverAddress: address,
+      privateKey: privateKey
+    };
+    
+    fs.writeFileSync(getConfigPath(), JSON.stringify(updatedConfig, null, 2));
+    return true;
+  } catch (error) {
+    console.error('Error saving config:', error);
+    return false;
   }
 });

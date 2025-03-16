@@ -45,6 +45,32 @@ def verify_signature(signature_b64: str, message: str) -> bool:
     print(f"Signature verification failed with all keys")
     return False
 
+@app.get("/status")
+async def server_status(x_signature: str = Header(None)):
+    if not x_signature:
+        # Public endpoint for client to check if API is up
+        keys = config.list_authorized_keys()
+        return {
+            "setup_complete": config.is_setup_complete(),
+            "key_count": len(keys)
+        }
+    
+    # Detailed status with authentication
+    if not verify_signature(x_signature, "status"):
+        raise HTTPException(status_code=403, detail="Unauthorized")
+    
+    screen_name = config.config.get("screen_name", "minecraft")
+    
+    # Check if server process is running
+    check_cmd = f"screen -list | grep {screen_name}"
+    stdout, _ = run_command(check_cmd)
+    is_running = screen_name in stdout
+    
+    response = {
+        "running": is_running
+    }
+        
+    return response
 
 # Start the server    
 @app.post("/start")

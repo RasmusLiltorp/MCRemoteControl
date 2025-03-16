@@ -32,7 +32,6 @@ def load_config():
         return DEFAULT_CONFIG
 
 def save_config(config):
-    """Save configuration to file"""
     try:
         with open(CONFIG_FILE, 'w') as f:
             json.dump(config, f, indent=4)
@@ -74,7 +73,6 @@ def list_authorized_keys():
     return keys
 
 def add_public_key(key_data, name):
-    """Add a public key to authorized keys"""
     ensure_keys_directory()
     
     # Validate the key
