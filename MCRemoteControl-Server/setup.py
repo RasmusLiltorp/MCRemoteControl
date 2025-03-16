@@ -3,6 +3,7 @@ import sys
 import json
 import argparse
 import config
+
 def setup_public_key(key_input, name=None):
     try:
         key_input_stripped = key_input.strip()
@@ -35,18 +36,49 @@ def setup_public_key(key_input, name=None):
             print("Public key setup cancelled.")
             return False
 
-        # Use filename as key name if not provided and input was from a file
         if not name:
-            if not key_input_stripped.startswith("-----BEGIN PUBLIC KEY-----") and os.path.exists(key_input):
-                name = os.path.basename(key_input).split('.')[0]
-            else:
-                name = "custom_key"
-                
+            name = input("Enter a name for this public key: ").strip()
+            if not name:
+                if not key_input_stripped.startswith("-----BEGIN PUBLIC KEY-----") and os.path.exists(key_input):
+                    name = os.path.basename(key_input).split('.')[0]
+                else:
+                    name = "custom_key"
+
+        # Prevent duplicate key names
+        existing_keys = config.list_authorized_keys()
+        if any(existing['name'] == name for existing in existing_keys):
+            print(f"Error: A public key with the name '{name}' is already configured. Please use a different name.")
+            return False
+
         return config.add_public_key(key_data, name)
     except Exception as e:
         print(f"Error setting up public key: {e}")
         return False
-    
+
+def rename_public_key(old_name, new_name):
+    try:
+        keys = config.list_authorized_keys()
+        found = False
+        for key in keys:
+            if key['name'] == old_name:
+                key['name'] = new_name
+                found = True
+        if not found:
+            print(f"Error: No key found with the name '{old_name}'.")
+            return False
+
+        cfg = config.load_config()
+        cfg['authorized_keys'] = keys
+        if config.save_config(cfg):
+            print(f"Renamed key '{old_name}' to '{new_name}'.")
+            return True
+        else:
+            print("Error: Failed to save configuration with the renamed key.")
+            return False
+    except Exception as e:
+        print(f"Error renaming key: {e}")
+        return False
+
 def show_config():
     cfg = config.load_config()
     print("\nCurrent Configuration:")
@@ -71,6 +103,7 @@ def main():
     parser = argparse.ArgumentParser(description="MCRemoteControl Server Setup")
     parser.add_argument("--add-key", metavar="KEY", help='Add a public key by passing the entire key as text (e.g., --add-key "-----BEGIN PUBLIC KEY-----\\n...\\n-----END PUBLIC KEY-----")')
     parser.add_argument("--remove-key", metavar="NAME", help="Remove a public key by name")
+    parser.add_argument("--rename-key", metavar=("OLD", "NEW"), nargs=2, help="Rename a public key by providing the current and the new key name")
     parser.add_argument("--reset", action="store_true", help="Reset to default configuration")
     parser.add_argument("--mc-root", metavar="PATH", help="Specify the path to your Minecraft server root directory")
     
@@ -91,7 +124,15 @@ def main():
     if args.remove_key:
         config.remove_public_key(args.remove_key)
     
-
+    if args.rename_key:
+        old_name, new_name = args.rename_key
+        # Check for duplicate new name before renaming
+        existing_keys = config.list_authorized_keys()
+        if any(key['name'] == new_name for key in existing_keys):
+            print(f"Error: A public key with the name '{new_name}' already exists. Please choose a different name.")
+        else:
+            rename_public_key(old_name, new_name)
+    
     if args.reset:
         confirm = input("Are you sure you want to reset to default configuration? (y/N): ")
         if confirm.lower() == 'y':

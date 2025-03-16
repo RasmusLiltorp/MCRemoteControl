@@ -88,12 +88,11 @@ async def start_server(x_signature: str = Header(None)):
     server_jar = config.config.get("server_jar", "server.jar")
     java_args = config.config.get("java_args", "-Xms2G -Xmx4G")
     screen_name = config.config.get("screen_name", "minecraft")
+    
     # screen -dmS minecraft java -Xms2G -Xmx4G -jar server.jar nogui
     command = f'cd {mc_dir} && screen -dmS {screen_name} java {java_args} -jar {server_jar} nogui'
     print(f"Executing command: {command}")
     stdout, stderr = run_command(command)
-    print("stdout:", stdout)
-    print("stderr:", stderr)
     return {"stdout": stdout, "stderr": stderr}
 
 # Stop the server
