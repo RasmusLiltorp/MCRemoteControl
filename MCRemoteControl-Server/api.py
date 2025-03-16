@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Header, HTTPException
 import base64
 import subprocess
-from cryptography.hazmat.primitives.asymmetric import padding, rsa
-from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes, serialization 
 
 app = FastAPI()
 
@@ -14,8 +14,14 @@ def run_command(command):
     except Exception as e:
         return str(e), ""
 
+# Load the public key from a file
+def load_public_key():
+    with open("public_key.pem", "rb") as key_file:
+        return serialization.load_pem_public_key(key_file.read())
+
 # Verifies the signature of client public key
 def verify_signature(signature_b64: str, message: str) -> bool:
+    public_key = load_public_key()
     try:
         signature = base64.b64decode(signature_b64)
         public_key.verify(
@@ -38,6 +44,7 @@ async def start_server(x_signature: str = Header(None)):
     stdout, stderr = run_command("screen -dmS minecraft java -Xmx4G -Xms4G -jar server.jar nogui")
     return {"stdout": stdout, "stderr": stderr}
 
+# Stop the server
 @app.post("/stop")
 async def stop_server(x_signature: str = Header(None)):
     if not x_signature or not verify_signature(x_signature, "stop"):

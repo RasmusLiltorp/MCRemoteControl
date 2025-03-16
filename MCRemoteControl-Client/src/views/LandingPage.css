@@ -1,0 +1,211 @@
+@import "tailwindcss";
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.titlebar {
+    height: 32px;
+    background: #2b2b2b;
+    display: flex;
+    user-select: none;
+    -webkit-app-region: drag;
+    width: 100%;
+}
+
+.drag-region {
+    flex-grow: 1;
+    -webkit-app-region: drag;
+}
+
+.window-controls {
+    display: flex;
+    -webkit-app-region: no-drag; 
+}
+
+.titlebar button {
+    -webkit-app-region: no-drag;
+}
+
+.btn {
+  @apply text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg transition;
+  padding: 0.5rem 1rem;
+  transform: translateY(0);
+}
+
+.btn:hover {
+  transform: translateY(-0.125rem);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:focus {
+  outline: none;
+  --tw-ring-offset-width: 2px;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+}
+
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg relative transition-colors;
+  max-width: 28rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem;
+}
+
+.toggle-btn {
+  @apply bg-blue-500 hover:bg-blue-600 text-white rounded-full transition flex items-center justify-center;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.toggle-btn:hover {
+  transform: translateY(-0.125rem);
+}
+
+.toggle-btn:active {
+  transform: translateY(0);
+}
+
+.toggle-btn:focus {
+  outline: none;
+  --tw-ring-offset-width: 2px;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+}
+
+.input-field {
+  @apply border rounded-lg transition-colors dark:bg-gray-700 dark:text-white;
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-color: rgb(209 213 219);
+  text-align: center;
+  width: 100%;
+}
+
+.input-field:focus {
+  outline: none;
+  --tw-ring-offset-width: 2px;
+  --tw-ring-color: rgb(59 130 246 / 0.5);
+}
+
+@media (min-width: 640px) {
+  .input-field {
+    text-align: left;
+  }
+}
+
+.status-message {
+  @apply bg-gray-100 dark:bg-gray-700 rounded border-l-4 border-blue-500 text-center transition-colors;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+}
+
+.settings-popup {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-10 transition-colors;
+  position: absolute;
+  top: 4rem;
+  right: 1rem;
+  width: 16rem;
+  padding: 1.25rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.settings-heading {
+  @apply text-blue-600 dark:text-blue-400 font-semibold text-center;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.secondary-btn {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition;
+  width: 100%;
+  padding: 0.5rem 1rem;
+}
+
+.github-button {
+    -webkit-app-region: no-drag;
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    width: 46px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    margin-right: auto; /* This pushes other buttons to the right */
+  }
+  
+.github-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.github-button:active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.github-button i {
+    font-size: 18px; 
+}
+
+.close-button {
+    -webkit-app-region: no-drag;
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    width: 46px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.close-button:hover {
+    background-color: #e81123;
+}
+
+.close-button:active {
+    background-color: #bf0f1d;
+}
+
+.close-button i {
+    font-size: 14px;
+}
+
+.minimize-button {
+    -webkit-app-region: no-drag;
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    width: 46px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    cursor: pointer;
+  }
+  
+.minimize-button:hover {
+background-color: rgba(255, 255, 255, 0.1);
+}
+
+.minimize-button:active {
+background-color: rgba(255, 255, 255, 0.2);
+}
+
+.minimize-button i {
+font-size: 12px;
+}
