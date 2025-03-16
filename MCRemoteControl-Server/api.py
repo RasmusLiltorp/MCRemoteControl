@@ -86,7 +86,7 @@ async def start_server(x_signature: str = Header(None)):
         raise HTTPException(status_code=503, detail="Minecraft root is not configured. Please set it via setup.")
 
     server_jar = config.config.get("server_jar", "server.jar")
-    java_args = config.config.get("java_args", "-Xmx4G -Xms4G")
+    java_args = config.config.get("java_args", "-Xms2G -Xmx4G")
     screen_name = config.config.get("screen_name", "minecraft")
     # screen -dmS minecraft java -Xms2G -Xmx4G -jar server.jar nogui
     command = f'cd {mc_dir} && screen -dmS {screen_name} java {java_args} -jar {server_jar} nogui'

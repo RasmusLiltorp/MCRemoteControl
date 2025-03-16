@@ -12,7 +12,7 @@ KEYS_DIR = os.path.join(CONFIG_DIR, "auth_keys")
 # Default config
 DEFAULT_CONFIG = {
     "server_jar": "server.jar",
-    "java_args": "-Xmx4G -Xms4G",
+    "java_args": "-Xms2G -Xmx4G",
     "screen_name": "minecraft",
     "port": 5000,
     "host": "0.0.0.0",
