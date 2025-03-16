@@ -61,7 +61,7 @@ The server is a FastAPI application that processes remote control commands for y
 1. **Clone the repository and navigate to the server directory:**
 
    ```bash
-   git clone https://github.com/YourUsername/MCRemoteControl.git
+   git clone https://github.com/RasmusLiltorp/MCRemoteControl.git
    cd MCRemoteControl/MCRemoteControl-Server
    ```
 
