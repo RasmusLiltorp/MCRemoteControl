@@ -14,7 +14,7 @@ DEFAULT_CONFIG = {
     "server_jar": "server.jar",
     "java_args": "-Xmx4G -Xms4G",
     "screen_name": "minecraft",
-    "port": 25565,
+    "port": 5000,
     "host": "0.0.0.0"
 }
 
