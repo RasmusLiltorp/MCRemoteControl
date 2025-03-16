@@ -56,7 +56,7 @@ def main():
     print("Press CTRL+C to stop\n")
     
     # Run the API server
-    uvicorn.run("api:app", host=host, port=port, workers=2)
+    uvicorn.run("api:app", host=host, port=port, workers=5)
 
 if __name__ == "__main__":
     main()

@@ -1,9 +1,11 @@
-const { app, BrowserWindow, ipcMain, clipboard, shell, dialog } = require("electron");
+const { app, BrowserWindow, ipcMain, clipboard, shell, dialog, nativeTheme } = require("electron");
 const { autoUpdater } = require("electron-updater"); 
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const isDev = process.env.NODE_ENV === 'development';
+
+nativeTheme.themeSource = 'dark';
 
 function createWindow() {
   const win = new BrowserWindow({

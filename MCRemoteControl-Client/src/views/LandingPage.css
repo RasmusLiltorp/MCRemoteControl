@@ -261,33 +261,3 @@ font-size: 12px;
   background-color: #F87171;
   color: #7F1D1D;
 }
-
-html,
-body,
-.min-h-screen {
-  background-color: #1a202c !important;
-}
-
-html {
-  color-scheme: dark;
-}
-body,
-button,
-input,
-select,
-textarea {
-  background-color: #1a202c !important;
-  color: #e2e8f0 !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-}
-
-input, 
-button {
-  background-color: #2d3748 !important;
-  color: #e2e8f0 !important;
-}
-
-::-webkit-file-upload-button {
-  background-color: #2d3748 !important;
-  color: #e2e8f0 !important;
-}

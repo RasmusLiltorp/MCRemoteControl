@@ -1,9 +1,10 @@
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, WebSocket, WebSocketDisconnect
 import base64
 import subprocess
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes, serialization 
 import config
+import asyncio
 
 app = FastAPI()
 
@@ -107,6 +108,20 @@ async def stop_server(x_signature: str = Header(None)):
     screen_name = config.config.get("screen_name", "minecraft")
     stdout, stderr = run_command(f'screen -S {screen_name} -X stuff "stop\n"')
     return {"stdout": stdout, "stderr": stderr}
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            # Wait for a message with a timeout (e.g., 60 seconds for inactivity)
+            data = await asyncio.wait_for(websocket.receive_text(), timeout=60)
+            # Process data as usual (and reset your inactivity timer here)
+    except asyncio.TimeoutError:
+        # If no data is received in 60 seconds, disconnect the client.
+        await websocket.close(code=1001)
+    except WebSocketDisconnect:
+        pass
 
 if __name__ == "__main__":
     import uvicorn
