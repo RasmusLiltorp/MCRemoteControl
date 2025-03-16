@@ -1,4 +1,5 @@
-const { app, BrowserWindow, ipcMain, clipboard, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, clipboard, shell, dialog } = require("electron");
+const { autoUpdater } = require("electron-updater"); 
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
@@ -33,6 +34,23 @@ function createWindow() {
   
   return win;
 }
+
+// Auto update event listeners
+autoUpdater.on('update-available', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update available',
+    message: 'A new version is available. It is being downloaded now.',
+  });
+});
+
+autoUpdater.on('update-downloaded', () => {
+  dialog.showMessageBox({
+    type: 'info',
+    title: 'Update Ready',
+    message: 'Update downloaded. Application will now restart.',
+  }).then(() => autoUpdater.quitAndInstall());
+});
 
 // Config path setup
 const getUserDataPath = () => app.getPath('userData');
@@ -156,6 +174,11 @@ ipcMain.on('minimize-window', () => {
 
 app.whenReady().then(() => {
   createWindow();
+
+  // Check for updates when the app is ready (non-dev)
+  if (!isDev) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 });
 
 app.on("window-all-closed", () => {

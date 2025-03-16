@@ -1,5 +1,5 @@
 <script lang="ts">
-import LandingPageLogic from './LandingPage.ts'
+import LandingPageLogic from './LandingPage'
 import './LandingPage.css'
 export default LandingPageLogic
 </script>

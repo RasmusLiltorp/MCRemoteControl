@@ -35,7 +35,7 @@
         }
       ]
     },
-
+    "asar": true,
     "nsis": {
       "oneClick": false,
       "perMachine": false,
@@ -45,12 +45,20 @@
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico",
       "shortcutName": "MCRemoteControl"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "RasmusLiltorp",
+        "repo": "MCRemoteControl"
+      }
+    ]
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.14",
     "axios": "^1.8.3",
     "crypto": "^1.0.1",
+    "electron-updater": "^6.3.9",
     "fs-extra": "^11.3.0",
     "vue": "^3.5.13",
     "vue-electron": "^1.0.6"

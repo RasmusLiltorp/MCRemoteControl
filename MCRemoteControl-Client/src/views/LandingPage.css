@@ -258,3 +258,9 @@ font-size: 12px;
   background-color: #F87171;
   color: #7F1D1D;
 }
+
+html,
+body,
+.min-h-screen {
+  background-color: #1a202c !important;
+}
