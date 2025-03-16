@@ -1,184 +1,135 @@
 # MCRemoteControl
 
-MCRemoteControl is a tool for allowing others to start and stop your Minecraft server. The project is divided into two parts:
+MCRemoteControl is a tool split into two parts:
 
-- **Client Side** – An Electron application (built with Vue 3, TypeScript, and Vite) for server configuration, key generation, and remote control.
-- **Server Side** – A FastAPI-based Python application that authenticates remote commands using RSA signatures and manages the Minecraft server process.
+- **Client:** An Electron (Vue 3/TypeScript/Vite) application that you can download from the [Releases](https://github.com/RasmusLiltorp/MCRemoteControl/releases) page.
+- **Server:** A FastAPI-based Python application for managing your Minecraft server, secured with RSA keys.
 
----
-
-## Table of Contents
-
-- [Client Side Installation](#client-side-installation)
-  - [Prerequisites](#prerequisites)
-  - [Installation & Development](#installation--development)
-  - [Production Build](#production-build)
-  - [Key Generation](#key-generation)
-- [Server Side Installation](#server-side-installation)
-  - [Local Setup](#local-setup)
-  - [Docker Setup](#docker-setup)
-  - [Integrating with Your Minecraft Server](#integrating-with-your-minecraft-server)
-- [Usage](#usage)
-- [Troubleshooting](#troubleshooting)
+![image](https://github.com/user-attachments/assets/8cef2076-3321-4d4c-843e-570f257f0c2a)
 
 ---
 
-## Client Side Installation
+## Client Setup
+
+1. **Download the Client Installer:**
+
+   - Visit the [Releases](https://github.com/RasmusLiltorp/MCRemoteControl/releases) page.
+   - Download the latest Windows installer (an `.exe` file).
+
+2. **Install the Client:**
+
+   - Run the installer and follow the on-screen instructions.
+   - Once installed, launch the application.
+   - Use the settings menu to +generate a new RSA key pair.
+   - Connect to your server after providing the host with your public key (copy it from the settings menu).
+
+---
+
+## Server Setup
 
 ### Prerequisites
 
-- [Node.js (v16 or later)](https://nodejs.org/)
-- [npm](https://www.npmjs.com/)
+- **Python 3.10 or later**  
+- **pip**
 
-### Installation & Development
+### Step-by-Step Setup
 
-- **TODO:** Provide detailed instructions for cloning, installing dependencies, and running in development mode.
+1. **Clone the Repository and Navigate to the Server Directory:**
 
-### Production Build
-
-- **TODO:** Provide build and preview instructions.
-
-### Key Generation
-
-The client provides functionality to generate an RSA key pair:
-
-- When you click **Generate New Key Pair** in the settings, the application generates a new RSA key pair.
-- The private key is returned to the client and is saved in your configuration.
-- You can then use the **Copy Public Key** button to copy the public key to your clipboard.
-- **Important:** After generating keys, make sure you enter and save the server address in the settings.
-
----
-
-## Server Side Installation
-
-The server is a FastAPI application that processes remote control commands and manages your Minecraft server. It uses RSA keys for authentication.
-
-### Local Setup
-
-#### Prerequisites
-
-- [Python 3.10](https://www.python.org/downloads/)
-- [pip](https://pip.pypa.io/en/stable/installation/)
-
-#### Steps
-
-1. **Clone the repository and navigate to the server directory:**
-
+   Open a terminal and run:
    ```bash
    git clone https://github.com/RasmusLiltorp/MCRemoteControl.git
    cd MCRemoteControl/MCRemoteControl-Server
    ```
 
-2. **Install dependencies:**
+2. **Set Up a Python Virtual Environment:**
 
+   Create and activate a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install Dependencies:**
+
+   Install the required Python packages:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Run the server:**
+4. **Configure Your Minecraft Server Folder Path:**
 
-   Start the FastAPI server using Uvicorn by running:
+   The server uses a configuration file (`config.json`). To set your Minecraft server root directory, run:
+   ```bash
+   python setup.py --mc-root "/path/to/your/minecraft/server/folder"
+   ```
+   Replace `/path/to/your/minecraft/server/folder` with the full path to your Minecraft server folder.
 
+5. **Setting Up API Keys:**
+
+   If no authentication keys are found, the server will prompt you during startup.
+   - Start the server with:
+     ```bash
+     python app.py
+     ```
+   - You will see a message like:
+     ```
+     No authentication keys found!
+     To configure the server, run:
+       python setup.py --add-key <path_to_public_key>
+     Or use the interactive setup now:
+     Would you like to run the setup now? (y/N):
+     ```
+   - To add a key, you can either:
+     - Pass the entire public key as text on the command line, or
+     - Use the interactive mode when prompted.  
+   **Example interactive flow:**
+   - If prompted, type `y` and then you will see your public key printed.
+   - Next, you will be asked:
+     ```
+     Enter a name for this public key:
+     ```
+     Provide a unique name _without duplicates_ (if a key with that name already exists, the setup will warn you).
+
+6. **Start the API Server:**
+
+   Once the above setup is complete, start the server again:
    ```bash
    python app.py
    ```
+   The API will attempt to bind to host `0.0.0.0` on port `5000`. Make sure this port is free.
 
-   The server will first check for authentication keys. In the absence of keys, it will prompt:
+7. **Verifying Server Operation:**
 
-   ```
-   ===== MCRemoteControl Server =====
-   No authentication keys found!
-   
-   To configure the server, run:
-     python setup.py --add-key <path_to_public_key>
-   Or use the interactive setup now:
-   Would you like to run the setup now? (y/N):
-   ```
-
-   In the `app.py` file, if no keys are found the interactive setup is triggered:
-
-   ```python
-   def setup_initial_config():
-       # Make sure config exists
-       cfg = config.load_config()
-       
-       # Check if any keys are configured
-       keys = config.list_authorized_keys()
-       
-       if not keys:
-           print("\n===== MCRemoteControl Server =====")
-           print("No authentication keys found!")
-           print("\nTo configure the server, run:")
-           print("  python setup.py --add-key <path_to_public_key>")
-           print("\nOr use the interactive setup now:")
-           
-           choice = input("Would you like to run the setup now? (y/N): ")
-           if choice.lower() == 'y':  
-               # Import and run setup
-               import setup
-               setup.main()
-           else:
-               choice = input("Setup cancelled")
-               sys.exit(1)
-       else:
-           print(f"\n===== MCRemoteControl Server =====")
-           print(f"Found {len(keys)} configured authentication keys")
-           for key in keys:
-               print(f" - {key['name']} (Fingerprint: {key['fingerprint']})")
-       
-       print("\n=====================================")
-   ```
-
-   After setup, the server starts on the host and port specified in your configuration (default is host `0.0.0.0` and port `5000`).
-
-### Docker Setup
-
-Docker is recommended for a consistent, containerized deployment.
-
-1. **Ensure Docker is installed** on your VPS. (See [Docker Installation Guide](https://docs.docker.com/get-docker/) for details.)
-
-2. **Build the Docker image:**  
-   In the `MCRemoteControl-Server` directory where the Dockerfile is located, run:
-
-   ```bash
-   docker build -t mcremotecontrol-server .
-   ```
-
-3. **Run the Docker container:**  
-   Map container port 5000 to host port 5000:
-
-   ```bash
-   docker run -d --name mcremotecontrol-server -p 5000:5000 mcremotecontrol-server
-   ```
-
-   The Dockerfile starts the server using the command:
-
-   ```
-   CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000"]
-   ```
-
-### Integrating with Your Minecraft Server
-
-After installing the server, integrate it with your Minecraft server installation. This means moving the MCRemoteControl-Server files into your Minecraft server’s root folder.
-
-## Move the Files to Your Minecraft Server Directory
-
-Assuming your Minecraft server root is `/minecraft`, run:
-```
-sudo cp -r /MCRemoteControl/MCRemoteControl-Server/ ./minecraft
-```
----
-
-## Usage
-
-- **Client Side:**  
-  Launch the application. Enter your Minecraft server address, generate RSA keys, and use the provided controls (connect, start, stop) to manage your server.
-
-- **Server Side:**  
-  The FastAPI server validates API requests using RSA signatures. It processes commands (like start or stop) which are triggered via API endpoints. Monitor the server through logs or status endpoints for operation status.
+   Use the client application to connect to your server. The client will use the RSA key pair for signing API requests.
 
 ---
 
 ## Troubleshooting
 
-- TODO
+- **Port 5000 Already in Use:**  
+  Check which process is using port 5000:
+  ```bash
+  sudo lsof -i :5000
+  ```
+  Then kill the process using:
+  ```bash
+  sudo kill -9 <PID>
+  ```
+  Alternatively, you can force kill all processes with:
+  ```bash
+  sudo fuser -k 5000/tcp
+  ```
+
+- **Virtual Environment Issues:**  
+  If you experience issues, make sure you have activated the correct Python virtual environment:
+  ```bash
+  source venv/bin/activate
+  ```
+
+- **API Key Setup:**  
+  Ensure that when adding a key, you provide a unique name. The interactive setup will prompt you to enter a name if you did not supply one. Duplicate names are not allowed.
+
+---
+
+Now you are ready to use MCRemoteControl to remotely manage your Minecraft server! Enjoy!
