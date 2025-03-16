@@ -3,6 +3,7 @@ import sys
 import uvicorn
 import config
 from api import app
+from fastapi.middleware.cors import CORSMiddleware
 
 def setup_initial_config():
     # Make sure config exists
@@ -35,6 +36,15 @@ def setup_initial_config():
     print("\n=====================================")
 
 def main():
+    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"], 
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    
     # Check setup before starting
     setup_initial_config()
     
