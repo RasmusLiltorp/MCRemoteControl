@@ -161,23 +161,12 @@ Docker is recommended for a consistent, containerized deployment.
 
 After installing the server, integrate it with your Minecraft server installation. This means moving the MCRemoteControl-Server files into your Minecraft server’s root folder.
 
-1. **Upload the files** to a temporary directory (e.g., `/tmp/mcremote`) on your Ubuntu VPS:
+## Move the Files to Your Minecraft Server Directory
 
-   ```bash
-   scp -r /path/to/MCRemoteControl-Server youruser@yourserver:/tmp/mcremote
-   ```
-
-2. **Merge the files into your Minecraft server directory:**  
-   Assuming your Minecraft server root is `/minecraft`, run:
-
-   ```bash
-   cd /tmp/mcremote
-   sudo cp -r . /minecraft
-   ```
-
-3. **Verify the integration:**  
-   Ensure that all MCRemoteControl files (scripts, configurations, etc.) now exist in `/minecraft`.
-
+Assuming your Minecraft server root is `/minecraft`, run:
+```
+sudo cp -r /MCRemoteControl/MCRemoteControl-Server/ ./minecraft
+```
 ---
 
 ## Usage
