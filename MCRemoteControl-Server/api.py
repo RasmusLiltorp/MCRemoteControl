@@ -3,6 +3,7 @@ import base64
 import subprocess
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes, serialization 
+import config
 
 app = FastAPI()
 
@@ -21,36 +22,58 @@ def load_public_key():
 
 # Verifies the signature of client public key
 def verify_signature(signature_b64: str, message: str) -> bool:
-    public_key = load_public_key()
-    try:
-        signature = base64.b64decode(signature_b64)
-        public_key.verify(
-            signature,
-            message.encode(),
-            padding.PKCS1v15(),
-            hashes.SHA256()
-        )
-        return True
-    except Exception as e:
-        print(f"Signature verification failed: {e}")
+    public_keys = config.load_all_public_keys()
+    
+    if not public_keys:
+        print("Cannot verify signature: No public keys configured")
         return False
+        
+    signature = base64.b64decode(signature_b64)
+    
+    # Try each key until one works
+    for public_key in public_keys:
+        try:
+            public_key.verify(
+                signature,
+                message.encode(),
+                padding.PKCS1v15(),
+                hashes.SHA256()
+            )
+            return True
+        except Exception:
+            continue  # Try the next key
+    print(f"Signature verification failed with all keys")
+    return False
+
 
 # Start the server    
 @app.post("/start")
 async def start_server(x_signature: str = Header(None)):
+    if not config.is_setup_complete():
+        raise HTTPException(status_code=503, detail="Server not configured. Please add at least one public key.")
+        
     if not x_signature or not verify_signature(x_signature, "start"):
         raise HTTPException(status_code=403, detail="Unauthorized")
 
-    stdout, stderr = run_command("screen -dmS minecraft java -Xmx4G -Xms4G -jar server.jar nogui")
+    server_jar = config.config.get("server_jar", "server.jar")
+    java_args = config.config.get("java_args", "-Xmx4G -Xms4G")
+    screen_name = config.config.get("screen_name", "minecraft")
+    
+    command = f"screen -dmS {screen_name} java {java_args} -jar {server_jar} nogui"
+    stdout, stderr = run_command(command)
     return {"stdout": stdout, "stderr": stderr}
 
 # Stop the server
 @app.post("/stop")
 async def stop_server(x_signature: str = Header(None)):
+    if not config.is_setup_complete():
+        raise HTTPException(status_code=503, detail="Server not configured")
+        
     if not x_signature or not verify_signature(x_signature, "stop"):
         raise HTTPException(status_code=403, detail="Unauthorized")
 
-    stdout, stderr = run_command('screen -S minecraft -X stuff "stop\n"')
+    screen_name = config.config.get("screen_name", "minecraft")
+    stdout, stderr = run_command(f'screen -S {screen_name} -X stuff "stop\n"')
     return {"stdout": stdout, "stderr": stderr}
 
 if __name__ == "__main__":
