@@ -26,6 +26,9 @@
 
 .titlebar button {
     -webkit-app-region: no-drag;
+    background-color: #2b2b2b !important;
+    color: #fff !important;
+    border: none !important;
 }
 
 .btn {
