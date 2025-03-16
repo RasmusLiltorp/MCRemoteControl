@@ -89,7 +89,7 @@ async def start_server(x_signature: str = Header(None)):
     java_args = config.config.get("java_args", "-Xmx4G -Xms4G")
     screen_name = config.config.get("screen_name", "minecraft")
     
-    command = f"cd {mc_dir} && /usr/bin/screen -dmS {screen_name} /usr/bin/java {java_args} -jar {server_jar} nogui"
+    command = f'cd {mc_dir} && /bin/bash -c "/usr/bin/screen -dmS {screen_name} /usr/bin/java {java_args} -jar {server_jar} nogui"'
     print(f"Executing command: {command}")
     stdout, stderr = run_command(command)
     print("stdout:", stdout)
