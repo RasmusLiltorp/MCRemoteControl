@@ -81,11 +81,15 @@ async def start_server(x_signature: str = Header(None)):
     if not x_signature or not verify_signature(x_signature, "start"):
         raise HTTPException(status_code=403, detail="Unauthorized")
 
+    mc_dir = config.config.get("minecraft_root")
+    if mc_dir == "":
+        raise HTTPException(status_code=503, detail="Minecraft root is not configured. Please set it via setup.")
+
     server_jar = config.config.get("server_jar", "server.jar")
     java_args = config.config.get("java_args", "-Xmx4G -Xms4G")
     screen_name = config.config.get("screen_name", "minecraft")
     
-    command = f"screen -dmS {screen_name} java {java_args} -jar {server_jar} nogui"
+    command = f"cd {mc_dir} && screen -dmS {screen_name} java {java_args} -jar {server_jar} nogui"
     stdout, stderr = run_command(command)
     return {"stdout": stdout, "stderr": stderr}
 

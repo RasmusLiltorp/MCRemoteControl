@@ -15,7 +15,8 @@ DEFAULT_CONFIG = {
     "java_args": "-Xmx4G -Xms4G",
     "screen_name": "minecraft",
     "port": 5000,
-    "host": "0.0.0.0"
+    "host": "0.0.0.0",
+    "minecraft_root": ""
 }
 
 def load_config():
