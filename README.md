@@ -1,4 +1,5 @@
 # MCRemoteControl
+MCRemoteControl lets you remotely start, stop, and manage your Minecraft server with a secure and easy-to-use interface. Generate your key pair, add the public key to your server, and take full control of your Minecraft world—right from your desktop! 🚀
 
 MCRemoteControl is a tool split into two parts:
 
