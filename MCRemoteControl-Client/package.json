@@ -11,6 +11,7 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "deploy": "electron-builder build --publish always",
+    "clean": "rmdir /s /q dist || echo Clean",
     "electron": "electron .",
     "dev:electron": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
     "build:electron": "npm run build && electron-builder"
@@ -25,8 +26,6 @@
       "buildResources": "build"
     },
     "files": [
-      "dist/**/*",
-      "electron/**/*",
       "!**/tests/",
       "!**/docs/",
       "!**/*.map"

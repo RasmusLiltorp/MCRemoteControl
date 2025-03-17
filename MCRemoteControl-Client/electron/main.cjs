@@ -32,6 +32,7 @@ function createWindow() {
     } else {
       console.error("Build files not found. Did you run 'npm run build' first?");
     }
+    win.loadFile(path.join(__dirname, '../dist/index.html'));
   }
   
   return win;
