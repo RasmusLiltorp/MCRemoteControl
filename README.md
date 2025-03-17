@@ -131,6 +131,45 @@ MCRemoteControl is a tool split into two parts:
 - **API Key Setup:**  
   Ensure that when adding a key, you provide a unique name. The interactive setup will prompt you to enter a name if you did not supply one. Duplicate names are not allowed.
 
+- **Server-side application stops when closing SSH session**
+  If you're experiencing issues with the server stopping after SSH sessions or system reboots, you need to set up the application as a system service. Follow these steps:
+  - Create the service file
+     Create a new service file with:
+      ```bash
+     sudo nano /etc/systemd/system/mcremotecontrol.service
+     ```
+  - Add the configuration below
+      ```bash
+      [Unit]
+      Description=MCRemoteControl Server
+      After=network.target
+      
+      [Service]
+      User=YOURUSER
+      Group=YOURUSER
+      WorkingDirectory=/INSERTYOURPATH/MCRemoteControl/MCRemoteControl-Server
+      ExecStart=/INSERTYOURPATH/MCRemoteControl/MCRemoteControl-Server/venv/bin/python app.py
+      Restart=always
+      RestartSec=5
+      StandardOutput=journal
+      StandardError=journal
+      
+      [Install]
+      WantedBy=multi-user.target     
+      ```
+   - Save the file
+   Press Ctrl+X, then Y, then Enter to save and exit.
+
+  - Enable and start the service
+     ```bash
+      sudo systemctl daemon-reload
+      sudo systemctl enable mcremotecontrol.service
+      sudo systemctl start mcremotecontrol.service
+      ```
+   - Verify service status
+      ```bash
+      sudo systemctl status mcremotecontrol.service
+      ```
 ---
 
 Now you are ready to use MCRemoteControl to remotely manage your Minecraft server! Enjoy!
