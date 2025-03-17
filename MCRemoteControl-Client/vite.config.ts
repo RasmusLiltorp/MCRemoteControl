@@ -7,7 +7,6 @@ export default defineConfig({
   plugins: [vue(), tailwindcss()],
   base: './',
   build: {
-    sourcemap: false,
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
